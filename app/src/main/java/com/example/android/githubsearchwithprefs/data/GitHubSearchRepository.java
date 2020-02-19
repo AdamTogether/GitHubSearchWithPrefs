@@ -14,7 +14,14 @@ public class GitHubSearchRepository implements GitHubSearchAsyncTask.Callback {
     private static final String TAG = GitHubSearchRepository.class.getSimpleName();
     private MutableLiveData<List<GitHubRepo>> mSearchResults;
     private MutableLiveData<Status> mLoadingStatus;
+
     private String mCurrentQuery;
+    private String mCurrentSort;
+    private String mCurrentLanguage;
+    private String mCurrentUser;
+    private boolean mCurrentSearchInName;
+    private boolean mCurrentSearchInDescription;
+    private boolean mCurrentSearchInReadme;
 
     public GitHubSearchRepository() {
         mSearchResults = new MutableLiveData<>();
@@ -22,8 +29,6 @@ public class GitHubSearchRepository implements GitHubSearchAsyncTask.Callback {
 
         mLoadingStatus = new MutableLiveData<>();
         mLoadingStatus.setValue(Status.SUCCESS);
-
-        mCurrentQuery = null;
     }
 
     public LiveData<List<GitHubRepo>> getSearchResults() {
@@ -44,14 +49,31 @@ public class GitHubSearchRepository implements GitHubSearchAsyncTask.Callback {
         }
     }
 
-    private boolean shouldExecuteSearch(String query) {
-        return !TextUtils.equals(query, mCurrentQuery);
+    private boolean shouldExecuteSearch(String query, String sort, String language, String user,
+                                        boolean searchInName, boolean searchInDescription,
+                                        boolean searchInReadme) {
+        return !TextUtils.equals(query, mCurrentQuery)
+                || !TextUtils.equals(sort, mCurrentSort)
+                || !TextUtils.equals(language, mCurrentLanguage)
+                || !TextUtils.equals(user, mCurrentUser)
+                || mCurrentSearchInName != searchInName
+                || mCurrentSearchInDescription != searchInDescription
+                || mCurrentSearchInReadme != searchInReadme;
     }
 
-    public void loadSearchResults(String query) {
-        if (shouldExecuteSearch(query)) {
+    public void loadSearchResults(String query, String sort, String language, String user,
+                                  boolean searchInName, boolean searchInDescription,
+                                  boolean searchInReadme) {
+        if (shouldExecuteSearch(query, sort, language, user, searchInName, searchInDescription, searchInReadme)) {
             mCurrentQuery = query;
-            String url = GitHubUtils.buildGitHubSearchURL(query);
+            mCurrentSort = sort;
+            mCurrentLanguage = language;
+            mCurrentUser = user;
+            mCurrentSearchInName = searchInName;
+            mCurrentSearchInDescription = searchInDescription;
+            mCurrentSearchInReadme = searchInReadme;
+            String url = GitHubUtils.buildGitHubSearchURL(query, sort, language, user, searchInName,
+                    searchInDescription, searchInReadme);
             mSearchResults.setValue(null);
             Log.d(TAG, "executing search with url: " + url);
             mLoadingStatus.setValue(Status.LOADING);

@@ -20,8 +20,11 @@ public class GitHubSearchViewModel extends ViewModel {
         mLoadingStatus = mRepository.getLoadingStatus();
     }
 
-    public void loadSearchResults(String query) {
-        mRepository.loadSearchResults(query);
+    public void loadSearchResults(String query, String sort, String language, String user,
+                                  boolean searchInName, boolean searchInDescription,
+                                  boolean searchInReadme) {
+        mRepository.loadSearchResults(query, sort, language, user, searchInName,
+                searchInDescription, searchInReadme);
     }
 
     public LiveData<List<GitHubRepo>> getSearchResults() {

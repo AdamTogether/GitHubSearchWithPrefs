@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements GitHubSearchAdapt
         boolean searchInReadme = preferences.getBoolean(
                 getString(R.string.pref_in_readme_key), true
         );
-        mViewModel.loadSearchResults(searchQuery);
+        mViewModel.loadSearchResults(searchQuery, sort, language, user, searchInName,
+                searchInDescription, searchInReadme);
     }
 }
